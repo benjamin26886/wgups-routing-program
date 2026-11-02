@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>WGUPS Routing Program - Task 2 Report</title>
+<style>
+  body { font-family: Calibri, Arial, sans-serif; font-size: 11pt; line-height: 1.4; }
+  h1 { font-size: 18pt; }
+  h2 { font-size: 14pt; margin-top: 18pt; }
+  h3 { font-size: 12pt; }
+  table { border-collapse: collapse; }
+  td, th { border: 1px solid #888; padding: 3pt 6pt; font-size: 10pt; }
+  .caption { font-style: italic; font-size: 10pt; }
+</style>
+</head>
+<body>
+
+<h1>WGUPS Routing Program &mdash; Task 2 Submission</h1>
+<p>Nicholas Benjamin &nbsp;|&nbsp; C950: Data Structures and Algorithms II</p>
+
+<h2>A. Hash Table</h2>
+<p>The hash table is the class <code>ChainingHashTable</code> in <code>main.py</code>. It uses no additional library or class; it is built only from plain lists. Its <code>insert</code> function takes the package ID as input and stores the delivery address, delivery deadline, delivery city, delivery zip code, package weight and delivery status (which carries the delivery time once the package is delivered). The routing details that are not part of the table (notes, assigned truck, departure and delivery times) are kept outside it, in the program&rsquo;s <code>PackageRecord</code> objects.</p>
+
+<h2>B. Look-Up Function</h2>
+<p>The <code>lookup(package_id)</code> method of <code>ChainingHashTable</code> takes a package ID and returns each of the data components listed in part A: address, deadline, city, zip code, weight and status (including the delivery time). Menu option 2 of the interface first refreshes the stored status for the time the user entered and then calls it. A screenshot appears in Figure E2.</p>
+
+<h2>C. Original Program</h2>
+<p>The program is in the file <code>main.py</code>. Its first line is the identifying comment containing the student ID, and detailed comments explain both the process (what each class and function does) and the flow of the program (load data &rarr; load trucks &rarr; route each truck &rarr; user interface). The program reads the package file and distance table supplied with the scenario (Western Governors University, n.d.).</p>
+
+<h2>D. Interface</h2>
+<p>The command-line interface lets the user (1) view the status of all packages, grouped by truck, at any time of day, (2) look up a single package at any time, and (3) view the mileage of every truck and the total mileage. Each status line reports the package as <i>Delayed</i>, <i>At Hub</i>, <i>En Route</i> or <i>Delivered at HH:MM:SS</i>, so the delivery time is always shown.</p>
+
+<h3>D1. Status check between 8:35 a.m. and 9:25 a.m. (09:00:00)</h3>
+<p><img src="file:///Users/nick/Desktop/UPSROuting%20files/screenshots/D1_status_0900.png" width="900"></p>
+<p class="caption">Figure D1. Status of all packages on Trucks 1, 2 and 3 at 09:00:00.</p>
+
+<h3>D2. Status check between 9:35 a.m. and 10:25 a.m. (10:00:00)</h3>
+<p><img src="file:///Users/nick/Desktop/UPSROuting%20files/screenshots/D2_status_1000.png" width="900"></p>
+<p class="caption">Figure D2. Status of all packages on Trucks 1, 2 and 3 at 10:00:00.</p>
+
+<h3>D3. Status check between 12:03 p.m. and 1:12 p.m. (12:15:00)</h3>
+<p><img src="file:///Users/nick/Desktop/UPSROuting%20files/screenshots/D3_status_1215.png" width="900"></p>
+<p class="caption">Figure D3. Status of all packages on Trucks 1, 2 and 3 at 12:15:00.</p>
+
+<h2>E. Successful Completion and Total Mileage</h2>
+<p><img src="file:///Users/nick/Desktop/UPSROuting%20files/screenshots/E_total_mileage.png" width="500"></p>
+<p class="caption">Figure E. The program runs without errors or warnings. Truck 1 drove 34.0 miles, Truck 2 drove 41.2 miles and Truck 3 drove 37.8 miles, for a total of 113.0 miles (113.0 &lt; 140).</p>
+<p><img src="file:///Users/nick/Desktop/UPSROuting%20files/screenshots/single_package_lookup.png" width="500"></p>
+<p class="caption">Figure E2. Look-up of Package 9 at 10:00:00 (wrong address still on file) and at 10:25:00 (corrected to 410 S State St, 84111).</p>
+
+<h2>F. Justification of the Package Delivery Algorithm</h2>
+<p>The solution uses the <b>Nearest Neighbor algorithm</b>, a greedy heuristic for the Traveling Salesman Problem. Each truck starts at the hub with its loaded packages and repeatedly drives to the closest address among its undelivered packages until none remain (Cormen et al., 2009; Rosenkrantz et al., 1977).</p>
+
+<h3>F1. Strengths of the algorithm</h3>
+<ol>
+  <li><b>Efficient and simple.</b> Each truck holds at most 16 packages, and the algorithm compares the truck's position with every remaining package once per stop. It runs in O(N<sup>2</sup>) time and O(1) extra space, so the whole route set is produced instantly. The simple logic is also easy to read, test and debug.</li>
+  <li><b>Produces a short route.</b> The three trucks drove 113.0 miles in total, which is well under the 140-mile limit, even though the algorithm does not search for the guaranteed shortest tour.</li>
+  <li><b>Adapts to the truck's actual position.</b> No route is pre-planned. After every delivery the next stop is chosen from where the truck is now, so the result stays correct whichever packages are loaded. Changing a truck's load only requires changing its list of package IDs.</li>
+</ol>
+
+<h3>F2. The algorithm meets all requirements in the scenario</h3>
+<p>The requirements below are those stated in the WGUPS scenario (Western Governors University, n.d.).</p>
+<table>
+  <tr><th>Requirement</th><th>How the solution meets it</th></tr>
+  <tr><td>All 40 packages delivered</td><td>Trucks 1, 2 and 3 carry 13, 16 and 11 packages (40 total). The last delivery is at 12:26:00.</td></tr>
+  <tr><td>Total mileage under 140</td><td>33.96 + 41.20 + 37.80 = 112.96 miles (displayed as 113.0).</td></tr>
+  <tr><td>Maximum 16 packages per truck</td><td><code>Truck</code> raises an error if more than 16 packages are loaded.</td></tr>
+  <tr><td>18 mph average speed</td><td>Travel time = distance / 18 is added to the truck clock after each leg.</td></tr>
+  <tr><td>Three trucks, two drivers</td><td>Truck 1 (driver 1) leaves 8:00 and is back at the hub at 9:53:12. Truck 2 (driver 2) leaves 9:05. Truck 3 leaves at 10:20, after driver 1 has returned, so never more than two trucks are out at once.</td></tr>
+  <tr><td>Nothing leaves before 8:00; delayed packages (6, 25, 28, 32) arrive at 9:05</td><td>They are loaded on Truck 2, which departs at 9:05. The interface reports them as <i>Delayed</i> before 9:05.</td></tr>
+  <tr><td>Truck 2 only (3, 18, 36, 38)</td><td>All four are on Truck 2.</td></tr>
+  <tr><td>Packages 13, 14, 15, 16, 19, 20 delivered together</td><td>All are on Truck 1.</td></tr>
+  <tr><td>Package 9 address corrected at 10:20</td><td>Package 9 is on Truck 3, which leaves at 10:20. Before 10:20 the interface shows the wrong address (300 State St); from 10:20 it shows 410 S State St, 84111.</td></tr>
+  <tr><td>Delivery deadlines</td><td>Every package with a 9:00 or 10:30 deadline is delivered on time (for example, Package 15 at 8:13:00 for a 9:00 deadline and Package 6 at 9:46:40 for 10:30). A check over all 40 packages found no late delivery.</td></tr>
+</table>
+
+<h3>F3. Two other algorithms that would meet all requirements</h3>
+<p><b>1. Held&ndash;Karp dynamic programming.</b> Because each truck carries at most 16 packages, the exact Held&ndash;Karp algorithm is feasible. It computes the shortest tour through all of a truck's stops by solving the problem for every subset of stops and extending the best partial tours (Held &amp; Karp, 1962).</p>
+<p><b>2. 2-opt local search.</b> 2-opt starts from any complete route and repeatedly removes two edges and reconnects the route in the other way, keeping the change whenever it shortens the route, until no swap improves it (Croes, 1958).</p>
+
+<h4>F3a. How each differs from Nearest Neighbor</h4>
+<ul>
+  <li><b>Held&ndash;Karp</b> is exact and considers all orderings through its table of subsets, so it always finds the shortest route for a truck. Nearest Neighbor commits to one nearest stop at a time and never reconsiders. The price is O(n<sup>2</sup>2<sup>n</sup>) time and O(n2<sup>n</sup>) memory compared with O(n<sup>2</sup>) time and O(1) memory.</li>
+  <li><b>2-opt</b> is an improvement method, not a construction method. It needs a finished route first and then changes it by reversing segments, whereas Nearest Neighbor builds a route one stop at a time and never modifies a stop once it is chosen.</li>
+</ul>
+
+<h2>G. What I Would Do Differently</h2>
+<p>If I did this project again I would change the following:</p>
+<ol>
+  <li><b>Load the trucks with code instead of by hand.</b> I assigned the packages to trucks manually after reading the special notes. I would write a loading step that first places the constrained packages (truck-2-only, grouped, delayed) and then fills the remaining space by grouping packages with nearby zip codes, so a new data set would not need manual planning.</li>
+  <li><b>Look up distances faster.</b> <code>get_distance</code> calls <code>list.index</code> on the address list, which scans the list each time. I would build an address-to-index table using my own hash table once, making each distance look-up O(1).</li>
+  <li><b>Make the driver rule explicit.</b> Truck 3's departure time is set by hand to 10:20. I would have the program compute it as the later of 10:20 and the return time of the first driver to come back.</li>
+  <li><b>Add automated tests.</b> I would add tests that check every deadline, special note and the 140-mile limit, instead of checking these with ad-hoc scripts.</li>
+</ol>
+
+<h2>H. Verification of the Data Structure</h2>
+<p>The chaining hash table meets every requirement in the scenario:</p>
+<ul>
+  <li><b>Stores every required component.</b> Each entry is keyed by package ID and holds the address, deadline, city, zip code, weight and status for the package.</li>
+  <li><b>Fast access.</b> The router, the Package 9 correction and the interface all find a package by its ID. A look-up or insertion is O(1) on average, and the table needs O(N) space for N packages.</li>
+  <li><b>Handles collisions and growth.</b> Packages whose IDs hash to the same bucket are chained in that bucket's list, so no package is lost or overwritten, and the table works for more than 40 packages (Cormen et al., 2009).</li>
+  <li><b>No additional libraries or classes</b> are used for the table itself.</li>
+</ul>
+
+<h3>H1. Two other data structures that could meet the requirements</h3>
+<p><b>1. Binary search tree (BST).</b> Each node would hold a package ID and its data, with smaller IDs in the left subtree and larger IDs in the right subtree (Cormen et al., 2009).</p>
+<p><b>2. Sorted array (list) with binary search.</b> The packages would be stored in a list ordered by package ID, and each look-up would binary search the list (Cormen et al., 2009).</p>
+
+<h4>H1a. How each differs from the hash table</h4>
+<ul>
+  <li><b>BST:</b> It places data by comparing keys rather than by calculating a bucket from the key, so look-up is O(log N) on average (O(N) if the tree becomes unbalanced) rather than O(1). In return, a BST keeps the packages in sorted order, which a hash table does not.</li>
+  <li><b>Sorted array:</b> It stores records contiguously in key order instead of in buckets. Look-up is O(log N), and an insertion must shift elements to keep the order, costing O(N), whereas a hash table insertion is O(1) on average.</li>
+</ul>
+
+<h2>I. Sources</h2>
+<p>Cormen, T. H., Leiserson, C. E., Rivest, R. L., &amp; Stein, C. (2009). <i>Introduction to algorithms</i> (3rd ed.). MIT Press.</p>
+<p>Croes, G. A. (1958). A method for solving traveling-salesman problems. <i>Operations Research, 6</i>(6), 791&ndash;812. https://doi.org/10.1287/opre.6.6.791</p>
+<p>Held, M., &amp; Karp, R. M. (1962). A dynamic programming approach to sequencing problems. <i>Journal of the Society for Industrial and Applied Mathematics, 10</i>(1), 196&ndash;210. https://doi.org/10.1137/0110015</p>
+<p>Rosenkrantz, D. J., Stearns, R. E., &amp; Lewis, P. M., II. (1977). An analysis of several heuristics for the traveling salesman problem. <i>SIAM Journal on Computing, 6</i>(3), 563&ndash;581. https://doi.org/10.1137/0206041</p>
+<p>Western Governors University. (n.d.). <i>WGUPS routing program scenario and data files</i> [Course materials]. WGU.</p>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# Duplicates / original WGU source files (not uploaded)
+final/
+extra_files/
+screenshots/rendered_old/
+ups_routing_program (1).pdf
+SLC downtown map.docx
+Sample Core Algorithm Overview.docx
+WGUPS Distance Table.xlsx
+WGUPS Package File.xlsx
+
+# Office lock files
+~$*
